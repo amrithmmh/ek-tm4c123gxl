@@ -40,5 +40,5 @@ Small modifications have been made to all of them in order to work outside the T
 	* Target Interface Speed: 1 MHz
 	* Program File: /path/to/tk421/build/tk421.out
 * Peripheral register definitions can be provided to Ozone in the optional "Peripherals" field.
-You will need the TM4C123GH6PM's SVD file, (hint: it is a large XML file somewhere in the TivaC source code).
-The file is not included here for licensing reasons...
+You will need the TM4C123GH6PM's SVD file.
+The file may be found in this [CMSIS-SVD repository](https://github.com/posborne/cmsis-svd).
