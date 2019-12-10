@@ -11,13 +11,13 @@ Small modifications have been made to all of them in order to work outside the T
 
 ## Usage
 
-This project is intended to be used as a template.
-Use the `init.sh` script to create a new project.
+The files in this repo are intended to be used as a template.
+Use the `init.sh` script to create a new project:
 
 * `init.sh /path/to/project`
 
-The `/path/to/project` may be absolute or relative and will be created if it does not already exist.
-Use `make` to build the new project.
+The `/path/to/project` may be absolute or relative.
+Move into the project directory and use `make` to build:
 
 * `make`
 
@@ -42,7 +42,7 @@ A single "blink" example is provided to demonstrate application usage.
 |RESET|RESET|
 |GND|GND|
 
-## Flash Debug
+## Flash & Debug
 
 * Flash and debug the program with the [Ozone](https://www.segger.com/products/development-tools/ozone-j-link-debugger/) application.
 * In the "New Project Wizard":
@@ -50,7 +50,7 @@ A single "blink" example is provided to demonstrate application usage.
 	* Target Interface: JTAG
 	* Host Interface
 	* Target Interface Speed: 1 MHz
-	* Program File: /path/to/tk421/build/tk421.out
+	* Program File: /path/to/project/build/tk421.out
 * Peripheral register definitions can be provided to Ozone in the optional "Peripherals" field.
 You will need the TM4C123GH6PM's SVD file.
 The file may be found in this [CMSIS-SVD repository](https://github.com/posborne/cmsis-svd).
