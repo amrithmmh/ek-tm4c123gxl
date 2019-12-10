@@ -2,3 +2,5 @@
 *.o
 *.map
 *.out
+examples/*
+!examples/blink/

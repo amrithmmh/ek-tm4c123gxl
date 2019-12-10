@@ -8,17 +8,19 @@ then
 	exit 1
 fi
 
-mkdir -p $1
-cp -r Makefile build inc src $1/
-echo '#include "tm4c123gh6pm.h"
+WDIR=$(pwd)
+DIR=$(realpath --relative-to=$WDIR $1)
+echo building $DIR
+mkdir -p $DIR/build $DIR/inc $DIR/src
 
-int main(void)
-{
-	volatile int i = 0;
+FILES=$(find ./ -maxdepth 2 -type f -name "*.ld" -or -name "*.[c|h]")
+FILES="$FILES
+./Makefile"
 
-	while (1) {
-		i++;
-	}
+for file in $FILES
+do
+	ln -rs $file $DIR/$file
+done
 
-	return 0;
-}' > $1/src/main.c
+exit 0
+
