@@ -7,10 +7,22 @@ Small modifications have been made to all of them in order to work outside the T
 ## Prerequisites
 
 * The [ARM GCC](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads) toolchain must be installed. The `bin` directory must be in your `PATH`.
+* `make` must be installed on the system. Linux users: `sudo apt install build-essential`
 
 ## Usage
 
-`./init.sh path/to/new/project` will create a new project directory with a minimal `main.c`. 
+This project is intended to be used as a template.
+Use the `init.sh` script to create a new project.
+
+* `init.sh /path/to/project`
+
+The `/path/to/project` may be absolute or relative and will be created if it does not already exist.
+Use `make` to build the new project.
+
+* `make`
+
+Other targets like `make clean` are supported for convienence.
+A single "blink" example is provided to demonstrate application usage.
 
 ## Using an External J-Link Probe
 
