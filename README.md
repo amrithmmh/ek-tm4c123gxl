@@ -1,6 +1,7 @@
 # EK-TM4C123GXL
 
-A minimal development environment for the Texas Instruments [EK-TM4C123GXL](http://www.ti.com/tool/ek-tm4c123gxl).
+This minimal development environment for the Texas Instruments [EK-TM4C123GXL](http://www.ti.com/tool/ek-tm4c123gxl).
+It is intended to provide a quick way to create and compile a C project for the TI TM4C123GH6PM MCU.
 The headers, startup code, and linker script are copied from [Energia](https://github.com/energia/Energia).
 Small modifications have been made to all of them in order to work outside the TivaC framework.
 
