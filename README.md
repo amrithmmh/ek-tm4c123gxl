@@ -50,7 +50,7 @@ A single "blink" example is provided to demonstrate application usage.
 	* Target Interface: JTAG
 	* Host Interface
 	* Target Interface Speed: 1 MHz
-	* Program File: /path/to/project/build/tk421.out
+	* Program File: /path/to/project/build/project.out
 * Peripheral register definitions can be provided to Ozone in the optional "Peripherals" field.
 You will need the TM4C123GH6PM's SVD file.
 The file may be found in this [CMSIS-SVD repository](https://github.com/posborne/cmsis-svd).
