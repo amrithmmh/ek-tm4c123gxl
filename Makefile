@@ -22,6 +22,7 @@ LDFLAGS=-T${LDSCRIPT}	\
 	-Map=$(BUILD_DIR)$(PROJECT).map
 
 SRC_FILES=$(wildcard $(SRC_DIR)*.c)
+ASMS=$(addprefix $(BUILD_DIR), $(notdir $(patsubst %.c,%.s,$(SRC_FILES))))
 OBJS=$(addprefix $(BUILD_DIR), $(notdir $(patsubst %.c,%.o,$(SRC_FILES))))
 
 DEBUG=false
@@ -32,11 +33,14 @@ endif
 
 OUT=$(BUILD_DIR)$(PROJECT).out
 
-$(OUT): ${OBJS} 
+$(OUT): ${OBJS} ${ASMS}
 	${LD} ${LDFLAGS} -o $@ ${OBJS}
 
 $(BUILD_DIR)%.o: $(SRC_DIR)%.c
 	${CC} ${CFLAGS} -o ${@} ${<}
+
+$(BUILD_DIR)%.s: $(SRC_DIR)%.c
+	${CC} ${CFLAGS} -S -o ${@} ${<}
 
 all: ${OUT}
 
