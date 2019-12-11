@@ -36,8 +36,8 @@ OUT=$(BUILD_DIR)$(PROJECT).out
 $(OUT): ${OBJS} ${ASMS}
 	${LD} ${LDFLAGS} -o $@ ${OBJS}
 
-$(BUILD_DIR)%.o: $(SRC_DIR)%.c
-	${CC} ${CFLAGS} -o ${@} ${<}
+$(BUILD_DIR)%.o: $(SRC_DIR)%.s
+	${AS} -o ${@} ${<}
 
 $(BUILD_DIR)%.s: $(SRC_DIR)%.c
 	${CC} ${CFLAGS} -S -o ${@} ${<}
@@ -50,6 +50,7 @@ print:
 	@echo ${OBJS}
 
 clean:
+	rm -f ${ASMS}
 	rm -f ${OBJS}
 	rm -f $(OUT)
 	rm -f $(basename $(OUT)).map
