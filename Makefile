@@ -1,57 +1,38 @@
+# this Makefile was derived from gcc-arm documentation
+# see the documenets in gcc-arm/share/doc/gcc-arm-none-eabi
+
 PROJECT=$(notdir $(CURDIR))
-BUILD_DIR=build/
-SRC_DIR=src/
+CC=arm-none-eabi-gcc
 
-PREFIX=arm-none-eabi
-COMPILER=gcc
-CC=${PREFIX}-${COMPILER}
-LD=${PREFIX}-ld
-AS=${PREFIX}-as
+ARCH_FLAGS=-mthumb	\
+	-mcpu=cortex-m4	\
+	-mfloat-abi=hard\
+	-mfpu=fpv4-sp-d16
 
-MCU=tm4c123gh6pm
+DEBUG_FLAGS=-g		\
+	-gdwarf-3	\
+	-gstrict-dwarf	\
+	-DDEBUG
 
-CFLAGS=-mthumb	\
-       -mcpu=cortex-m4	\
-       -mfpu=fpv4-sp-d16 -mfloat-abi=hard	\
-       -Wall	\
-       -c	\
-       -Iinc
+# Startup code
+STARTUP=startup/startup_ARMCM4.S
+STARTUP_DEFS=-D__STARTUP_CLEAR_BSS -D__START=main
 
-LDSCRIPT=$(BUILD_DIR)lm4fcpp_blizzard.ld
-LDFLAGS=-T${LDSCRIPT}	\
-	-Map=$(BUILD_DIR)$(PROJECT).map
+CFLAGS=$(ARCH_FLAGS) $(DEBUG_FLAGS) $(STARTUP_DEFS) -Iinc
 
-SRC_FILES=$(wildcard $(SRC_DIR)*.c)
-ASMS=$(addprefix $(BUILD_DIR), $(notdir $(patsubst %.c,%.s,$(SRC_FILES))))
-OBJS=$(addprefix $(BUILD_DIR), $(notdir $(patsubst %.c,%.o,$(SRC_FILES))))
+# create a map file
+MAP=-Wl,-Map=$(PROJECT).map 
+# garbage collection
+GC=-Wl,--gc-sections
 
-DEBUG=false
+LDSCRIPTS=-Lldscripts -T nokeep.ld
+LFLAGS=$(LDSCRIPTS) $(MAP) $(GC)
 
-ifdef DEBUG
-	CFLAGS+=-g -gdwarf-3 -gstrict-dwarf -DDEBUG
-endif
+$(PROJECT).axf: src/main.c $(STARTUP)
+	$(CC) $^ $(CFLAGS) $(LFLAGS) -o $@
 
-OUT=$(BUILD_DIR)$(PROJECT).out
-
-$(OUT): ${OBJS} ${ASMS}
-	${LD} ${LDFLAGS} -o $@ ${OBJS}
-
-$(BUILD_DIR)%.o: $(SRC_DIR)%.s
-	${AS} -o ${@} ${<}
-
-$(BUILD_DIR)%.s: $(SRC_DIR)%.c
-	${CC} ${CFLAGS} -S -o ${@} ${<}
-
-all: ${OUT}
+clean: 
+	rm -f *.axf *.map *.o
 
 print:
-	@echo ${CFLAGS}
-	@echo ${SRC_FILES}
-	@echo ${OBJS}
-
-clean:
-	rm -f ${ASMS}
-	rm -f ${OBJS}
-	rm -f $(OUT)
-	rm -f $(basename $(OUT)).map
-
+	@echo $(CFLAGS)

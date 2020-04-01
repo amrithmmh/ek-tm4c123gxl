@@ -1,1 +1,0 @@
-../../../build/lm4fcpp_blizzard.ld

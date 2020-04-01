@@ -1,1 +1,0 @@
-../../../src/startup_gcc.c
