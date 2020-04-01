@@ -2,7 +2,16 @@
 # see the documenets in gcc-arm/share/doc/gcc-arm-none-eabi
 
 PROJECT=$(notdir $(CURDIR))
-CC=arm-none-eabi-gcc
+
+BUILD_DIR=build/
+INC_DIR=inc/
+SRC_DIR=src/
+
+PREFIX=arm-none-eabi
+CC=$(PREFIX)-gcc
+LD=$(PREFIX)-ld
+AS=$(PREFIX)-as
+PP=$(PREFIX)-cpp
 
 ARCH_FLAGS=-mthumb	\
 	-mcpu=cortex-m4	\
@@ -18,21 +27,28 @@ DEBUG_FLAGS=-g		\
 STARTUP=startup/startup_ARMCM4.S
 STARTUP_DEFS=-D__STARTUP_CLEAR_BSS -D__START=main
 
-CFLAGS=$(ARCH_FLAGS) $(DEBUG_FLAGS) $(STARTUP_DEFS) -Iinc
+CFLAGS=$(ARCH_FLAGS) $(DEBUG_FLAGS) $(STARTUP_DEFS)
+CFLAGS+=-I$(INC_DIR)
 
 # create a map file
-MAP=-Wl,-Map=$(PROJECT).map 
+MAP=--Map=$(BUILD_DIR)$(PROJECT).map
 # garbage collection
-GC=-Wl,--gc-sections
+GC=--gc-sections
 
 LDSCRIPTS=-Lldscripts -T nokeep.ld
 LFLAGS=$(LDSCRIPTS) $(MAP) $(GC)
 
-$(PROJECT).axf: src/main.c $(STARTUP)
-	$(CC) $^ $(CFLAGS) $(LFLAGS) -o $@
+# link the executable
+$(BUILD_DIR)$(PROJECT).axf: $(STARTUP) src/main.c
+	$(CC) $(CFLAGS) -S -o $(BUILD_DIR)main.S src/main.c
+	$(AS) $(ARCH_FLAGS) -o $(BUILD_DIR)main.o $(BUILD_DIR)main.S
+	$(PP) $(STARTUP_DEFS) $(STARTUP) > build/startup_ARMCM4.i
+	$(AS) $(ARCH_FLAGS)  -o $(BUILD_DIR)startup_ARMCM4.o build/startup_ARMCM4.i
+	$(LD) $(LFLAGS) -o $(@) build/startup_ARMCM4.o build/main.o
 
-clean: 
+clean:
 	rm -f *.axf *.map *.o
+	rm -f build/*
 
 print:
 	@echo $(CFLAGS)
