@@ -24,14 +24,9 @@ DEBUG_FLAGS=-g		\
 	-gstrict-dwarf	\
 	-DDEBUG
 
-# Startup code
-STARTUP=startup_ARMCM4.S
 STARTUP_DEFS=-D__STARTUP_CLEAR_BSS -D__START=main
 
-#TODO colapse this
-# create a map file
 MAP=--Map=$(BUILD_DIR)$(PROJECT).map
-# garbage collection
 GC=--gc-sections
 LDSCRIPTS=-Lldscripts -T nokeep.ld
 
@@ -46,7 +41,9 @@ SRC_FILES=$(wildcard $(SRC_DIR)*.c $(STARTUP_DIR)*.S)
 ASMS=$(addprefix $(BUILD_DIR), $(notdir $(addsuffix .s, $(basename $(SRC_FILES)))))
 OBJS=$(addprefix $(BUILD_DIR), $(notdir $(addsuffix .o, $(basename $(SRC_FILES)))))
 
-all: $(BUILD_DIR)$(PROJECT).axf
+EXE=$(BUILD_DIR)$(PROJECT).axf
+
+all: $(EXE)
 
 .SECONDARY:
 $(BUILD_DIR)%.s: $(STARTUP_DIR)%.S
@@ -58,10 +55,9 @@ $(BUILD_DIR)%.s: $(SRC_DIR)%.c
 $(BUILD_DIR)%.o: $(BUILD_DIR)%.s
 	$(AS) $(ASFLAGS) -o $@ $<
 
-$(BUILD_DIR)$(PROJECT).axf: $(OBJS)
+$(EXE): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
 
-.PHONY:
 clean:
 	rm -f build/*
 
@@ -73,3 +69,6 @@ print:
 	@echo $(SRC_FILES)
 	@echo $(ASMS)
 	@echo $(OBJS)
+
+.PHONY: clean print
+
