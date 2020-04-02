@@ -46,23 +46,23 @@ SRC_FILES=$(wildcard $(SRC_DIR)*.c $(STARTUP_DIR)*.S)
 ASMS=$(addprefix $(BUILD_DIR), $(notdir $(addsuffix .s, $(basename $(SRC_FILES)))))
 OBJS=$(addprefix $(BUILD_DIR), $(notdir $(addsuffix .o, $(basename $(SRC_FILES)))))
 
-$(BUILD_DIR)$(PROJECT).axf: $(ASMS) $(OBJS)
-	$(LD) $(LDFLAGS) -o $@ $(OBJS)
+all: $(BUILD_DIR)$(PROJECT).axf
 
-$(BUILD_DIR)startup_ARMCM4.s: $(STARTUP_DIR)$(STARTUP)
+.SECONDARY:
+$(BUILD_DIR)%.s: $(STARTUP_DIR)%.S
 	$(PP) $(CPPFLAGS) -o $@ $<
 
-$(BUILD_DIR)startup_ARMCM4.o: $(BUILD_DIR)startup_ARMCM4.s
-	$(AS) $(ASFLAGS) -o $@ $<
-
-$(BUILD_DIR)main.s: src/main.c
+$(BUILD_DIR)%.s: $(SRC_DIR)%.c
 	$(CC) -S $(CFLAGS) -o $@ $<
 
-$(BUILD_DIR)main.o: $(BUILD_DIR)main.s
+$(BUILD_DIR)%.o: $(BUILD_DIR)%.s
 	$(AS) $(ASFLAGS) -o $@ $<
 
+$(BUILD_DIR)$(PROJECT).axf: $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ $(OBJS)
+
+.PHONY:
 clean:
-	rm -f *.axf *.map *.o
 	rm -f build/*
 
 print:
