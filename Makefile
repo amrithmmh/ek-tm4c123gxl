@@ -6,6 +6,7 @@ PROJECT=$(notdir $(CURDIR))
 BUILD_DIR=build/
 INC_DIR=inc/
 SRC_DIR=src/
+STARTUP_DIR=startup/
 
 PREFIX=arm-none-eabi
 CC=$(PREFIX)-gcc
@@ -24,31 +25,46 @@ DEBUG_FLAGS=-g		\
 	-DDEBUG
 
 # Startup code
-STARTUP=startup/startup_ARMCM4.S
+STARTUP=startup_ARMCM4.S
 STARTUP_DEFS=-D__STARTUP_CLEAR_BSS -D__START=main
 
-CFLAGS=$(ARCH_FLAGS) $(DEBUG_FLAGS) $(STARTUP_DEFS)
-CFLAGS+=-I$(INC_DIR)
-
+#TODO colapse this
 # create a map file
 MAP=--Map=$(BUILD_DIR)$(PROJECT).map
 # garbage collection
 GC=--gc-sections
-
 LDSCRIPTS=-Lldscripts -T nokeep.ld
-LFLAGS=$(LDSCRIPTS) $(MAP) $(GC)
 
-# link the executable
-$(BUILD_DIR)$(PROJECT).axf: $(STARTUP) src/main.c
-	$(CC) $(CFLAGS) -S -o $(BUILD_DIR)main.S src/main.c
-	$(AS) $(ARCH_FLAGS) -o $(BUILD_DIR)main.o $(BUILD_DIR)main.S
-	$(PP) $(STARTUP_DEFS) $(STARTUP) > build/startup_ARMCM4.i
-	$(AS) $(ARCH_FLAGS)  -o $(BUILD_DIR)startup_ARMCM4.o build/startup_ARMCM4.i
-	$(LD) $(LFLAGS) -o $(@) build/startup_ARMCM4.o build/main.o
+# variables used by make's builtin rules
+CPPFLAGS=$(STARTUP_DEFS)
+CFLAGS=$(ARCH_FLAGS) $(DEBUG_FLAGS) $(STARTUP_DEFS) -I$(INC_DIR)
+ASFLAGS=$(ARCH_FLAGS)
+LDFLAGS=$(LDSCRIPTS) $(MAP) $(GC)
+
+ASMS=build/startup_ARMC4.s build/main.s
+OBJS=build/startup_ARMC4.o build/main.o
+
+$(BUILD_DIR)$(PROJECT).axf: $(ASMS) $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ $(OBJS)
+
+$(BUILD_DIR)startup_ARMC4.s: $(STARTUP_DIR)$(STARTUP)
+	$(PP) $(CPPFLAGS) -o $@ $<
+
+$(BUILD_DIR)startup_ARMC4.o: $(BUILD_DIR)startup_ARMC4.s
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(BUILD_DIR)main.s: src/main.c
+	$(CC) -S $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)main.o: $(BUILD_DIR)main.s
+	$(AS) $(ASFLAGS) -o $@ $<
 
 clean:
 	rm -f *.axf *.map *.o
 	rm -f build/*
 
 print:
+	@echo $(CPPFLAGS)
 	@echo $(CFLAGS)
+	@echo $(ASFLAGS)
+	@echo $(LDFLAGS)
