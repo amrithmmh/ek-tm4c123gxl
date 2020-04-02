@@ -41,16 +41,18 @@ CFLAGS=$(ARCH_FLAGS) $(DEBUG_FLAGS) $(STARTUP_DEFS) -I$(INC_DIR)
 ASFLAGS=$(ARCH_FLAGS)
 LDFLAGS=$(LDSCRIPTS) $(MAP) $(GC)
 
-ASMS=build/startup_ARMC4.s build/main.s
-OBJS=build/startup_ARMC4.o build/main.o
+SRC_FILES=$(wildcard $(SRC_DIR)*.c $(STARTUP_DIR)*.S)
+#take the base name of the file, add the suffix, remove the directory, and replace it with the build dir
+ASMS=$(addprefix $(BUILD_DIR), $(notdir $(addsuffix .s, $(basename $(SRC_FILES)))))
+OBJS=$(addprefix $(BUILD_DIR), $(notdir $(addsuffix .o, $(basename $(SRC_FILES)))))
 
 $(BUILD_DIR)$(PROJECT).axf: $(ASMS) $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
 
-$(BUILD_DIR)startup_ARMC4.s: $(STARTUP_DIR)$(STARTUP)
+$(BUILD_DIR)startup_ARMCM4.s: $(STARTUP_DIR)$(STARTUP)
 	$(PP) $(CPPFLAGS) -o $@ $<
 
-$(BUILD_DIR)startup_ARMC4.o: $(BUILD_DIR)startup_ARMC4.s
+$(BUILD_DIR)startup_ARMCM4.o: $(BUILD_DIR)startup_ARMCM4.s
 	$(AS) $(ASFLAGS) -o $@ $<
 
 $(BUILD_DIR)main.s: src/main.c
@@ -68,3 +70,6 @@ print:
 	@echo $(CFLAGS)
 	@echo $(ASFLAGS)
 	@echo $(LDFLAGS)
+	@echo $(SRC_FILES)
+	@echo $(ASMS)
+	@echo $(OBJS)
