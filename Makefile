@@ -45,6 +45,10 @@ EXE=$(BUILD_DIR)$(PROJECT).axf
 
 all: $(EXE)
 
+asm: $(ASMS)
+
+obj: $(OBJS)
+
 .SECONDARY:
 $(BUILD_DIR)%.s: $(STARTUP_DIR)%.S
 	$(PP) $(CPPFLAGS) -o $@ $<
