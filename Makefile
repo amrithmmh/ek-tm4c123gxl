@@ -4,8 +4,8 @@
 PROJECT=$(notdir $(CURDIR))
 
 BUILD_DIR=build/
-INC_DIR=inc/
 SRC_DIR=src/
+INC_DIR=$(SRC_DIR)inc/
 STARTUP_DIR=startup/
 
 PREFIX=arm-none-eabi
